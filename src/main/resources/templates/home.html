@@ -1,0 +1,1924 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${siteName} + ' | Watch Anime Online'">
+        AnimeFlix SA | Watch Anime Online
+    </title>
+
+    <meta name="description"
+          content="Discover anime, explore new series, and find your next favourite anime on AnimeFlix SA.">
+
+    <style>
+        :root {
+            --background: #0b0b0f;
+            --surface: #17171d;
+            --surface-light: #22222a;
+            --primary: #e50914;
+            --primary-hover: #ff2530;
+            --text: #ffffff;
+            --muted: #b4b4be;
+            --border: #303039;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* NAVIGATION */
+
+        .navbar {
+            width: 100%;
+            min-height: 76px;
+            padding: 16px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            background: rgba(10, 10, 14, 0.97);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: #d8d8df;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-hover);
+        }
+
+        .nav-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-search input {
+            width: 190px;
+            padding: 10px 12px;
+            background: var(--surface);
+            border: 1px solid #44444e;
+            border-radius: 5px;
+            color: white;
+            outline: none;
+        }
+
+        .nav-search input:focus {
+            border-color: var(--primary);
+        }
+
+        .nav-search button {
+            padding: 10px 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .nav-search button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* HERO SECTION */
+
+        .hero {
+            min-height: 480px;
+            padding: 75px 7%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 80% 35%,
+                    rgba(229, 9, 20, 0.24), transparent 42%),
+                linear-gradient(110deg,
+                    #101015 0%,
+                    #171018 55%,
+                    #340b12 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero::after {
+            content: "ANIME";
+            position: absolute;
+            right: -25px;
+            bottom: -55px;
+            font-size: clamp(100px, 21vw, 290px);
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.035);
+            letter-spacing: -10px;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 650px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-label {
+            display: inline-block;
+            color: #ff6971;
+            border: 1px solid rgba(229, 9, 20, 0.6);
+            background: rgba(229, 9, 20, 0.12);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 68px);
+            line-height: 1.05;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            max-width: 540px;
+            color: #d0cfd6;
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 14px 22px;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #151515;
+        }
+
+        .btn-secondary:hover {
+            background: #dddddd;
+        }
+
+        /* QUICK FEATURES */
+
+        .features {
+            padding: 24px 5%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            background: #101015;
+        }
+
+        .feature {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .feature-icon {
+            font-size: 27px;
+        }
+
+        .feature h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .feature p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+
+/* CONTINUE WATCHING */
+
+.continue-section {
+    margin-bottom: 45px;
+    display: none;
+}
+
+.continue-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.continue-card {
+    display: flex;
+    min-width: 0;
+    gap: 14px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.continue-poster {
+    width: 100px;
+    min-width: 100px;
+    height: 135px;
+    object-fit: cover;
+    border-radius: 5px;
+    background: #292029;
+}
+
+.continue-details {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+}
+
+.continue-details h3 {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.continue-details p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.continue-progress {
+    width: 100%;
+    height: 5px;
+    background: #383840;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.continue-progress span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+}
+
+.continue-button {
+    display: inline-block;
+    margin-top: auto;
+    padding: 9px 12px;
+    background: var(--primary);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.continue-button:hover {
+    background: var(--primary-hover);
+}
+
+.continue-empty {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+    .continue-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .continue-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .continue-poster {
+        width: 85px;
+        min-width: 85px;
+        height: 115px;
+    }
+}
+
+/* RECENTLY WATCHED HISTORY */
+
+.history-section {
+    display: none;
+    margin-bottom: 45px;
+}
+
+.history-heading-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.clear-history-button {
+    padding: 10px 14px;
+    background: #303039;
+    color: #ffffff;
+    border: 1px solid #484852;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.clear-history-button:hover {
+    background: #454550;
+    border-color: var(--primary);
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.history-card {
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    gap: 14px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.history-poster {
+    width: 95px;
+    min-width: 95px;
+    height: 130px;
+    object-fit: cover;
+    background: #292029;
+    border-radius: 5px;
+}
+
+.history-details {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.history-details h3 {
+    font-size: 15px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.history-details p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.history-resume-button {
+    display: inline-block;
+    margin-top: auto;
+    padding: 9px 12px;
+    background: var(--primary);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.history-resume-button:hover {
+    background: var(--primary-hover);
+}
+
+.history-empty {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+@media (max-width: 1000px) {
+    .history-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .history-card {
+        gap: 11px;
+        padding: 11px;
+    }
+
+    .history-poster {
+        width: 80px;
+        min-width: 80px;
+        height: 110px;
+    }
+
+    .history-heading-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+        /* MAIN CONTENT */
+
+        .main-content {
+            padding: 40px 5% 70px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section-heading h2::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 25px;
+            margin-right: 12px;
+            background: var(--primary);
+            vertical-align: -4px;
+            border-radius: 2px;
+        }
+
+        /* FILTERS */
+
+        .catalogue-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .catalogue-tools input,
+        .catalogue-tools select {
+            min-width: 180px;
+            padding: 12px 14px;
+            background: var(--surface);
+            border: 1px solid #41414b;
+            border-radius: 5px;
+            color: white;
+            outline: none;
+        }
+
+        .catalogue-tools input {
+            flex: 1;
+        }
+
+        .catalogue-tools input:focus,
+        .catalogue-tools select:focus {
+            border-color: var(--primary);
+        }
+
+        .catalogue-tools option {
+            background: var(--surface);
+        }
+
+        /* ANIME GRID */
+
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .anime-card {
+            min-width: 0;
+            background: var(--surface);
+            border: 1px solid #292932;
+            border-radius: 9px;
+            overflow: hidden;
+            transition: transform 0.25s, border-color 0.25s;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-5px);
+            border-color: #6a252b;
+        }
+
+        .poster {
+            height: 250px;
+            background:
+                radial-gradient(circle at 50% 35%,
+                    #492027 0%,
+                    #25141b 38%,
+                    #17171d 75%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .poster-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            text-align: center;
+            background:
+                linear-gradient(145deg,
+                    rgba(229, 9, 20, 0.12),
+                    transparent 55%);
+        }
+
+        .poster-placeholder .poster-symbol {
+            font-size: 48px;
+            margin-bottom: 14px;
+        }
+
+        .poster-placeholder strong {
+            font-size: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .poster-placeholder small {
+            margin-top: 8px;
+            color: #c3a6aa;
+            letter-spacing: 2px;
+        }
+
+        .anime-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 6px 9px;
+            background: var(--primary);
+            color: white;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .anime-info {
+            padding: 16px;
+        }
+
+        .anime-info h3 {
+            font-size: 17px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .anime-meta {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .anime-rating {
+            color: #ffc857;
+            font-weight: bold;
+        }
+
+        .anime-genre {
+            display: inline-block;
+            padding: 5px 8px;
+            margin-bottom: 12px;
+            background: #2b2024;
+            color: #ffb2b7;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .anime-description {
+            color: #b8b8c2;
+            font-size: 13px;
+            line-height: 1.6;
+            min-height: 62px;
+            margin-bottom: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 9px;
+        }
+
+        .card-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+            padding: 10px 8px;
+            border-radius: 4px;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .card-button-primary {
+            color: white;
+            background: var(--primary);
+        }
+
+        .card-button-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .card-button-secondary {
+            color: white;
+            background: #303039;
+        }
+
+        .card-button-secondary:hover {
+            background: #41414b;
+        }
+
+        .no-results {
+            display: none;
+            padding: 45px 20px;
+            text-align: center;
+            color: var(--muted);
+            background: var(--surface);
+            border: 1px dashed #45454f;
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+
+        /* GENRES */
+
+        .genre-section {
+            margin-top: 55px;
+        }
+
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .genre-item {
+            padding: 24px 16px;
+            text-align: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .genre-item:hover {
+            background: #241519;
+            border-color: var(--primary);
+        }
+
+        .genre-item .genre-icon {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .genre-item strong {
+            font-size: 14px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            padding: 35px 5%;
+            background: #101015;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #c8c8d0;
+            font-size: 13px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-hover);
+        }
+
+        /* RESPONSIVE DESIGN */
+
+        @media (max-width: 1100px) {
+            .anime-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .nav-search input {
+                width: 145px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .navbar {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 18px;
+            }
+
+            .nav-search {
+                margin-left: auto;
+            }
+
+            .hero {
+                min-height: 400px;
+                padding: 55px 6%;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .anime-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 15px;
+            }
+
+            .genre-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .poster {
+                height: 230px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 15px 4%;
+                gap: 15px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .nav-search {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .nav-search input {
+                flex: 1;
+                width: 0;
+                min-width: 0;
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .hero {
+                min-height: 390px;
+                padding: 45px 5%;
+            }
+
+            .hero h1 {
+                font-size: 39px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .main-content {
+                padding: 30px 4% 50px;
+            }
+
+            .section-heading h2 {
+                font-size: 23px;
+            }
+
+            .anime-grid {
+                gap: 10px;
+            }
+
+            .poster {
+                height: 175px;
+            }
+
+            .poster-placeholder strong {
+                font-size: 15px;
+            }
+
+            .poster-placeholder .poster-symbol {
+                font-size: 35px;
+            }
+
+            .anime-info {
+                padding: 11px;
+            }
+
+            .anime-info h3 {
+                font-size: 14px;
+            }
+
+            .anime-description {
+                font-size: 12px;
+                min-height: auto;
+            }
+
+            .anime-meta {
+                font-size: 11px;
+            }
+
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .genre-grid {
+                gap: 10px;
+            }
+
+            .genre-item {
+                padding: 18px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<header class="navbar">
+
+    <a class="logo" href="/">
+        ANIMEFLIX<span> SA</span>
+    </a>
+
+    <nav class="nav-links">
+        <a class="active" href="/">Home</a>
+        <a href="#anime-catalogue">Anime</a>
+        <a href="#genres">Genres</a>
+        <a href="#popular">Popular</a>
+    </nav>
+
+    <form class="nav-search" id="navSearchForm">
+        <input
+            type="search"
+            id="navSearchInput"
+            placeholder="Search anime..."
+            aria-label="Search anime">
+
+        <button type="submit">Search</button>
+    </form>
+
+</header>
+
+
+<!-- HERO -->
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-label">YOUR ANIME DESTINATION</span>
+
+        <h1>
+            YOUR NEXT<br>
+            <span>ANIME OBSESSION</span>
+        </h1>
+
+        <p>
+            Discover unforgettable adventures, legendary heroes,
+            powerful rivalries and incredible worlds.
+            Find your next favourite anime with AnimeFlix SA.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="#anime-catalogue" class="btn btn-primary">
+                &#9654; Explore Anime
+            </a>
+
+            <a href="#genres" class="btn btn-secondary">
+                Browse Genres
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FEATURES -->
+<section class="features">
+
+    <div class="feature">
+        <span class="feature-icon">&#127916;</span>
+        <div>
+            <h3>Discover Anime</h3>
+            <p>Explore titles across different genres.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <span class="feature-icon">&#128269;</span>
+        <div>
+            <h3>Find Your Favourite</h3>
+            <p>Search the catalogue by anime title.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <span class="feature-icon">&#127775;</span>
+        <div>
+            <h3>Explore New Worlds</h3>
+            <p>Discover stories and new adventures.</p>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+    <!-- CONTINUE WATCHING -->
+    <section class="continue-section" id="continueWatching">
+
+        <div class="section-heading">
+            <div>
+                <h2>Continue Watching</h2>
+                <p>Pick up where you left off.</p>
+            </div>
+        </div>
+
+        <div class="continue-grid" id="continueGrid"></div>
+
+    </section>
+
+<!-- RECENTLY WATCHED HISTORY -->
+<section class="history-section" id="watchHistory">
+
+    <div class="section-heading">
+        <div>
+            <h2>Recently Watched</h2>
+            <p>Return to episodes you watched recently.</p>
+        </div>
+
+        <div class="history-heading-actions">
+            <span id="historyCount"
+                  style="color: var(--muted); font-size: 13px;">
+                0 episodes
+            </span>
+
+            <button
+                type="button"
+                class="clear-history-button"
+                id="clearHistoryButton">
+                Clear History
+            </button>
+        </div>
+    </div>
+
+    <div class="history-grid" id="historyGrid"></div>
+
+    <p class="history-empty" id="historyEmpty" style="display: none;">
+        No watch history yet. Start watching an episode and it will
+        appear here.
+    </p>
+
+</section>
+
+    <!-- ANIME CATALOGUE -->
+    <section id="anime-catalogue">
+
+        <div class="section-heading">
+            <div>
+                <h2 id="popular">Anime Catalogue</h2>
+                <p>Explore the anime available in our catalogue.</p>
+            </div>
+
+            <p>
+                Total titles:
+                <strong th:text="${#lists.size(animeList)}">0</strong>
+            </p>
+        </div>
+
+
+        <!-- SEARCH AND FILTER -->
+        <div class="catalogue-tools">
+
+            <input
+                type="search"
+                id="catalogueSearch"
+                placeholder="Search by anime title..."
+                aria-label="Filter anime by title">
+
+            <select id="genreFilter" aria-label="Filter by genre">
+                <option value="">All genres</option>
+            </select>
+
+            <select id="sortFilter" aria-label="Sort anime">
+                <option value="default">Default order</option>
+                <option value="title-asc">Title: A to Z</option>
+                <option value="title-desc">Title: Z to A</option>
+                <option value="year-desc">Newest year first</option>
+                <option value="year-asc">Oldest year first</option>
+            </select>
+
+        </div>
+
+
+        <!-- DYNAMIC ANIME CARDS -->
+        <div class="anime-grid" id="animeGrid">
+
+            <article
+                class="anime-card"
+                th:each="anime : ${animeList}"
+                th:attr="data-title=${anime.title},
+                         data-genre=${anime.genre},
+                         data-year=${anime.releaseYear},
+                         data-rating=${anime.rating}">
+
+                <div class="poster">
+
+                    <img
+                        th:if="${anime.posterUrl != null and !#strings.isEmpty(anime.posterUrl)}"
+                        th:src="${anime.posterUrl}"
+                        th:alt="${anime.title}"
+                        loading="lazy"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                    <div
+                        class="poster-placeholder"
+                        th:style="${anime.posterUrl != null and !#strings.isEmpty(anime.posterUrl)} ? 'display:none' : 'display:flex'">
+
+                        <span class="poster-symbol">&#127916;</span>
+
+                        <strong th:text="${anime.title}">
+                            Anime Title
+                        </strong>
+
+                        <small>ANIMEFLIX SA</small>
+
+                    </div>
+
+                    <span class="anime-badge">Anime</span>
+
+                </div>
+
+
+                <div class="anime-info">
+
+                    <h3 th:text="${anime.title}">
+                        Anime Title
+                    </h3>
+
+                    <div class="anime-meta">
+
+                        <span th:text="${anime.releaseYear}">
+                            Year
+                        </span>
+
+                        <span class="anime-rating">
+                            &#9733;
+                            <span th:text="${anime.rating}">
+                                Rating
+                            </span>
+                        </span>
+
+                    </div>
+
+                    <span
+                        class="anime-genre"
+                        th:text="${anime.genre}">
+                        Genre
+                    </span>
+
+                    <p
+                        class="anime-description"
+                        th:text="${anime.description}">
+                        Anime description.
+                    </p>
+
+                    <div class="card-actions">
+
+                        <a
+                            class="card-button card-button-primary"
+                            th:href="@{/anime/{id}(id=${anime.id})}">
+                            View Details
+                        </a>
+
+                        <button
+                            class="card-button card-button-secondary details-button"
+                            type="button"
+                            th:attr="data-title=${anime.title},
+                                     data-description=${anime.description},
+                                     data-genre=${anime.genre},
+                                     data-year=${anime.releaseYear},
+                                     data-rating=${anime.rating}">
+                            Quick Info
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+
+        <!-- NO SEARCH RESULTS -->
+        <div class="no-results" id="noResults">
+            <h3>No anime found</h3>
+            <p>Try another title or select a different genre.</p>
+        </div>
+
+    </section>
+
+
+    <!-- GENRE SECTION -->
+    <section class="genre-section" id="genres">
+
+        <div class="section-heading">
+            <div>
+                <h2>Explore Genres</h2>
+                <p>Choose a genre to filter the anime catalogue.</p>
+            </div>
+        </div>
+
+        <div class="genre-grid">
+
+            <button
+                class="genre-item genre-button"
+                type="button"
+                data-genre="Action">
+                <span class="genre-icon">&#9876;</span>
+                <strong>Action</strong>
+            </button>
+
+            <button
+                class="genre-item genre-button"
+                type="button"
+                data-genre="Adventure">
+                <span class="genre-icon">&#127758;</span>
+                <strong>Adventure</strong>
+            </button>
+
+            <button
+                class="genre-item genre-button"
+                type="button"
+                data-genre="Fantasy">
+                <span class="genre-icon">&#128302;</span>
+                <strong>Fantasy</strong>
+            </button>
+
+            <button
+                class="genre-item genre-button"
+                type="button"
+                data-genre="Drama">
+                <span class="genre-icon">&#127917;</span>
+                <strong>Drama</strong>
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+
+    <div class="footer-content">
+
+        <div>
+            <a class="logo" href="/">
+                ANIMEFLIX<span> SA</span>
+            </a>
+
+            <p style="margin-top: 12px;">
+                Your anime discovery destination.<br>
+                &copy; <span id="currentYear"></span> AnimeFlix SA.
+            </p>
+        </div>
+
+        <nav class="footer-links">
+            <a href="/">Home</a>
+            <a href="#anime-catalogue">Catalogue</a>
+            <a href="#genres">Genres</a>
+        </nav>
+
+    </div>
+
+</footer>
+
+
+<!-- PAGE INTERACTIONS -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput = document.getElementById("catalogueSearch");
+        const navSearchInput = document.getElementById("navSearchInput");
+        const navSearchForm = document.getElementById("navSearchForm");
+        const genreFilter = document.getElementById("genreFilter");
+        const sortFilter = document.getElementById("sortFilter");
+        const animeGrid = document.getElementById("animeGrid");
+        const noResults = document.getElementById("noResults");
+
+        const originalCards = Array.from(
+            animeGrid.querySelectorAll(".anime-card")
+        );
+
+        document.getElementById("currentYear").textContent =
+            new Date().getFullYear();
+        
+        // CONTINUE WATCHING
+        const continueSection =
+            document.getElementById("continueWatching");
+
+        const continueGrid =
+            document.getElementById("continueGrid");
+
+        function renderContinueWatching() {
+            const savedItems = [];
+
+            // Read saved episode progress from this browser.
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+
+                if (
+                    !key ||
+                    !key.startsWith("animeflix-progress:")
+                ) {
+                    continue;
+                }
+
+                try {
+                    const progress = JSON.parse(
+                        localStorage.getItem(key)
+                    );
+
+                    if (
+                        !progress ||
+                        !progress.animeId ||
+                        !progress.episodeId ||
+                        !progress.watchUrl ||
+                        !Number.isFinite(progress.currentTime) ||
+                        !Number.isFinite(progress.duration) ||
+                        progress.duration <= 0 ||
+                        progress.currentTime <= 0 ||
+                        progress.currentTime >= progress.duration - 5
+                    ) {
+                        continue;
+                    }
+
+                    progress.storageKey = key;
+                    savedItems.push(progress);
+
+                } catch (error) {
+                    console.warn(
+                        "Skipping invalid playback progress:",
+                        key
+                    );
+                }
+            }
+
+            // Show the most recently watched episodes first.
+            savedItems.sort(function (a, b) {
+                return (b.updatedAt || 0) - (a.updatedAt || 0);
+            });
+
+            // Keep only the latest progress record per episode.
+            const seenEpisodes = new Set();
+
+            const uniqueItems = savedItems.filter(function (item) {
+                const episodeKey =
+                    item.animeId + ":" + item.episodeId;
+
+                if (seenEpisodes.has(episodeKey)) {
+                    return false;
+                }
+
+                seenEpisodes.add(episodeKey);
+                return true;
+            });
+
+            // Limit the homepage section to six cards.
+            const itemsToShow = uniqueItems.slice(0, 6);
+
+            continueGrid.replaceChildren();
+
+            if (itemsToShow.length === 0) {
+                continueSection.style.display = "none";
+                return;
+            }
+
+            continueSection.style.display = "block";
+
+            itemsToShow.forEach(function (item) {
+                const card = document.createElement("article");
+                card.className = "continue-card";
+
+                const poster = document.createElement("img");
+                poster.className = "continue-poster";
+                poster.alt = item.animeTitle || "Anime poster";
+                poster.loading = "lazy";
+
+                if (item.animePoster) {
+                    poster.src = item.animePoster;
+
+                    poster.addEventListener("error", function () {
+                        poster.style.display = "none";
+                    }, { once: true });
+                } else {
+                    poster.style.display = "none";
+                }
+
+                const details = document.createElement("div");
+                details.className = "continue-details";
+
+                const title = document.createElement("h3");
+                title.textContent = item.animeTitle || "Anime";
+
+                const episode = document.createElement("p");
+                episode.textContent =
+                    "Season " + item.seasonNumber +
+                    " · Episode " + item.episodeNumber +
+                    " — " + item.episodeTitle;
+
+                const percentage = Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        Math.round(
+                            item.currentTime / item.duration * 100
+                        )
+                    )
+                );
+
+                const progressText = document.createElement("p");
+                progressText.textContent =
+                    percentage + "% watched";
+
+                const progressBar =
+                    document.createElement("div");
+
+                progressBar.className = "continue-progress";
+                progressBar.setAttribute(
+                    "role",
+                    "progressbar"
+                );
+                progressBar.setAttribute(
+                    "aria-valuemin",
+                    "0"
+                );
+                progressBar.setAttribute(
+                    "aria-valuemax",
+                    "100"
+                );
+                progressBar.setAttribute(
+                    "aria-valuenow",
+                    String(percentage)
+                );
+                progressBar.setAttribute(
+                    "aria-label",
+                    "Episode progress"
+                );
+
+                const progressFill =
+                    document.createElement("span");
+
+                progressFill.style.width = percentage + "%";
+                progressBar.appendChild(progressFill);
+
+                const resumeLink = document.createElement("a");
+                resumeLink.className = "continue-button";
+                resumeLink.href = item.watchUrl;
+                resumeLink.textContent = "Resume Watching";
+
+                details.append(
+                    title,
+                    episode,
+                    progressText,
+                    progressBar,
+                    resumeLink
+                );
+
+                card.append(poster, details);
+                continueGrid.appendChild(card);
+            });
+        }
+
+        renderContinueWatching();
+
+
+        // RECENTLY WATCHED HISTORY
+
+        const historySection =
+            document.getElementById("watchHistory");
+
+        const historyGrid =
+            document.getElementById("historyGrid");
+
+        const historyCount =
+            document.getElementById("historyCount");
+
+        const historyEmpty =
+            document.getElementById("historyEmpty");
+
+        const clearHistoryButton =
+            document.getElementById("clearHistoryButton");
+
+        const HISTORY_KEY = "animeflix-watch-history";
+
+        function getWatchHistory() {
+            try {
+                const savedHistory =
+                    localStorage.getItem(HISTORY_KEY);
+
+                if (!savedHistory) {
+                    return [];
+                }
+
+                const history = JSON.parse(savedHistory);
+
+                if (!Array.isArray(history)) {
+                    return [];
+                }
+
+                return history
+                    .filter(function (item) {
+                        return item &&
+                            item.animeId &&
+                            item.episodeId &&
+                            item.watchUrl;
+                    })
+                    .sort(function (a, b) {
+                        return getHistoryTimestamp(b) -
+                               getHistoryTimestamp(a);
+                    });
+
+            } catch (error) {
+                console.error(
+                    "Could not read AnimeFlix SA watch history:",
+                    error
+                );
+
+                return [];
+            }
+        }
+
+        function getHistoryTimestamp(item) {
+            const value = item.lastWatched;
+
+            if (typeof value === "number") {
+                return value;
+            }
+
+            if (typeof value === "string") {
+                const timestamp = Date.parse(value);
+
+                return Number.isNaN(timestamp) ? 0 : timestamp;
+            }
+
+            return 0;
+        }
+
+        function formatHistoryDate(item) {
+            const timestamp = getHistoryTimestamp(item);
+
+            if (!timestamp) {
+                return "Recently watched";
+            }
+
+            return "Last watched: " +
+                new Date(timestamp).toLocaleString();
+        }
+
+        function renderWatchHistory() {
+            const history = getWatchHistory().slice(0, 10);
+
+            historyGrid.replaceChildren();
+
+            historyCount.textContent =
+                history.length + (
+                    history.length === 1 ? " episode" : " episodes"
+                );
+
+            if (history.length === 0) {
+                historySection.style.display = "none";
+                historyEmpty.style.display = "none";
+                return;
+            }
+
+            historySection.style.display = "block";
+            historyEmpty.style.display = "none";
+
+            history.forEach(function (item) {
+                const card = document.createElement("article");
+                card.className = "history-card";
+
+                // Anime poster
+                const poster = document.createElement("img");
+                poster.className = "history-poster";
+                poster.alt =
+                    (item.animeTitle || "Anime") + " poster";
+                poster.loading = "lazy";
+
+                if (item.animePoster) {
+                    poster.src = item.animePoster;
+
+                    poster.addEventListener("error", function () {
+                        poster.style.display = "none";
+                    }, { once: true });
+                } else {
+                    poster.style.display = "none";
+                }
+
+                // Episode information
+                const details = document.createElement("div");
+                details.className = "history-details";
+
+                const title = document.createElement("h3");
+                title.textContent = item.animeTitle || "Anime";
+
+                const episode = document.createElement("p");
+
+                const seasonNumber =
+                    item.seasonNumber ?? "?";
+
+                const episodeNumber =
+                    item.episodeNumber ?? "?";
+
+                episode.textContent =
+                    "Season " + seasonNumber +
+                    " · Episode " + episodeNumber;
+
+                if (item.episodeTitle) {
+                    episode.textContent +=
+                        " — " + item.episodeTitle;
+                }
+
+                const watchedDate = document.createElement("p");
+                watchedDate.textContent = formatHistoryDate(item);
+
+                // Resume episode link
+                const resumeLink = document.createElement("a");
+                resumeLink.className = "history-resume-button";
+                resumeLink.href = item.watchUrl;
+                resumeLink.textContent = "Resume Episode";
+
+                details.append(
+                    title,
+                    episode,
+                    watchedDate,
+                    resumeLink
+                );
+
+                card.append(poster, details);
+                historyGrid.appendChild(card);
+            });
+        }
+
+        // Clear only the watch history.
+        // Continue Watching progress is not deleted.
+        clearHistoryButton.addEventListener("click", function () {
+            const history = getWatchHistory();
+
+            if (history.length === 0) {
+                return;
+            }
+
+            const confirmed = window.confirm(
+                "Clear your recently watched history? " +
+                "Your Continue Watching progress will remain saved."
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            localStorage.removeItem(HISTORY_KEY);
+            renderWatchHistory();
+        });
+
+        // Update when another tab changes localStorage.
+        window.addEventListener("storage", function (event) {
+            if (event.key === HISTORY_KEY || event.key === null) {
+                renderWatchHistory();
+            }
+
+            if (
+                event.key === null ||
+                (event.key &&
+                 event.key.startsWith("animeflix-progress:"))
+            ) {
+                renderContinueWatching();
+            }
+        });
+
+        // Display saved history when the homepage opens.
+        renderWatchHistory();
+
+        // Build the genre filter from the actual database records.
+        const genreSet = new Set();
+
+        originalCards.forEach(function (card) {
+            const genreText = card.dataset.genre || "";
+
+            genreText.split(",").forEach(function (genre) {
+                const cleanedGenre = genre.trim();
+
+                if (cleanedGenre) {
+                    genreSet.add(cleanedGenre);
+                }
+            });
+        });
+
+        Array.from(genreSet)
+            .sort()
+            .forEach(function (genre) {
+                const option = document.createElement("option");
+                option.value = genre.toLowerCase();
+                option.textContent = genre;
+                genreFilter.appendChild(option);
+            });
+
+
+        // Filter and sort the cards displayed on the page.
+        function updateCatalogue() {
+
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const selectedGenre = genreFilter.value.toLowerCase();
+            const sortOption = sortFilter.value;
+
+            let visibleCards = originalCards.filter(function (card) {
+
+                const title = (card.dataset.title || "").toLowerCase();
+                const genre = (card.dataset.genre || "").toLowerCase();
+
+                const matchesSearch = title.includes(searchTerm);
+
+                const matchesGenre =
+                    !selectedGenre ||
+                    genre.split(",").some(function (item) {
+                        return item.trim() === selectedGenre;
+                    });
+
+                return matchesSearch && matchesGenre;
+            });
+
+
+            if (sortOption === "title-asc") {
+                visibleCards.sort(function (a, b) {
+                    return a.dataset.title.localeCompare(b.dataset.title);
+                });
+            }
+
+            if (sortOption === "title-desc") {
+                visibleCards.sort(function (a, b) {
+                    return b.dataset.title.localeCompare(a.dataset.title);
+                });
+            }
+
+            if (sortOption === "year-desc") {
+                visibleCards.sort(function (a, b) {
+                    return (parseInt(b.dataset.year, 10) || 0) -
+                           (parseInt(a.dataset.year, 10) || 0);
+                });
+            }
+
+            if (sortOption === "year-asc") {
+                visibleCards.sort(function (a, b) {
+                    return (parseInt(a.dataset.year, 10) || 0) -
+                           (parseInt(b.dataset.year, 10) || 0);
+                });
+            }
+
+
+            // Reorder cards without requesting another page.
+            visibleCards.forEach(function (card) {
+                animeGrid.appendChild(card);
+            });
+
+            originalCards.forEach(function (card) {
+                if (!visibleCards.includes(card)) {
+                    card.style.display = "none";
+                } else {
+                    card.style.display = "";
+                }
+            });
+
+            noResults.style.display =
+                visibleCards.length === 0 ? "block" : "none";
+        }
+
+
+        searchInput.addEventListener("input", updateCatalogue);
+        genreFilter.addEventListener("change", updateCatalogue);
+        sortFilter.addEventListener("change", updateCatalogue);
+
+
+        // Navigation search transfers the text to the catalogue search.
+        navSearchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            searchInput.value = navSearchInput.value;
+            updateCatalogue();
+
+            document.getElementById("anime-catalogue").scrollIntoView({
+                behavior: "smooth"
+            });
+        });
+
+
+        // Clicking a genre card selects that genre.
+        document.querySelectorAll(".genre-button").forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                const selectedGenre = button.dataset.genre.toLowerCase();
+
+                const matchingOption = Array.from(genreFilter.options)
+                    .find(function (option) {
+                        return option.value === selectedGenre;
+                    });
+
+                if (matchingOption) {
+                    genreFilter.value = matchingOption.value;
+                    searchInput.value = "";
+                    navSearchInput.value = "";
+                    updateCatalogue();
+
+                    document.getElementById("anime-catalogue").scrollIntoView({
+                        behavior: "smooth"
+                    });
+                } else {
+                    alert(
+                        "There are currently no catalogue records for this genre."
+                    );
+                }
+            });
+
+        });
+
+
+        // Quick Info shows the details available for the selected anime.
+        document.querySelectorAll(".details-button").forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                const title = button.dataset.title || "Anime";
+                const description =
+                    button.dataset.description || "No description available.";
+                const genre = button.dataset.genre || "Not specified";
+                const year = button.dataset.year || "Not specified";
+                const rating = button.dataset.rating || "Not rated";
+
+                alert(
+                    title + "\n\n" +
+                    "Genre: " + genre + "\n" +
+                    "Year: " + year + "\n" +
+                    "Rating: " + rating + "\n\n" +
+                    description
+                );
+            });
+
+        });
+
+
+        updateCatalogue();
+
+    });
+</script>
+
+</body>
+</html>

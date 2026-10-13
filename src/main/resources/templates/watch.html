@@ -1,0 +1,1221 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${anime.title} + ' - Watch | AnimeFlix SA'">
+        Watch Anime | AnimeFlix SA
+    </title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #101010;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 18px 5%;
+            background: #080808;
+            border-bottom: 1px solid #292929;
+        }
+
+        .logo {
+            color: #e50914;
+            font-size: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #ffffff;
+        }
+
+        .back-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            background: #292929;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .back-link:hover {
+            background: #444444;
+        }
+
+        .page-container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 30px auto 60px;
+        }
+
+        .page-heading {
+            margin-bottom: 20px;
+        }
+
+        .page-heading h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .page-heading p {
+            color: #aaaaaa;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .watch-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .video-section {
+            min-width: 0;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: #000000;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #292929;
+        }
+
+        .video-player {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000000;
+            object-fit: contain;
+        }
+
+        .video-placeholder {
+            padding: 30px;
+            text-align: center;
+            color: #aaaaaa;
+            background: #171717;
+            line-height: 1.7;
+        }
+
+        .next-episode-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.84);
+        }
+
+        .next-episode-overlay[hidden] {
+            display: none !important;
+        }
+
+        .next-episode-panel {
+            width: 100%;
+            max-width: 380px;
+            padding: 25px;
+            background: #191919;
+            border: 1px solid #414141;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .next-episode-panel h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .next-episode-panel p {
+            color: #bbbbbb;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .countdown-number {
+            color: #e50914;
+            font-size: 34px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .next-episode-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .overlay-button {
+            padding: 11px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .play-next-button {
+            color: #ffffff;
+            background: #e50914;
+        }
+
+        .play-next-button:hover {
+            background: #b80710;
+        }
+
+        .cancel-next-button {
+            color: #ffffff;
+            background: #353535;
+        }
+
+        .cancel-next-button:hover {
+            background: #494949;
+        }
+
+        .episode-information {
+            margin-top: 22px;
+            padding: 22px;
+            background: #191919;
+            border: 1px solid #292929;
+            border-radius: 8px;
+        }
+
+        .episode-information h2 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .episode-information p {
+            color: #bbbbbb;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-line;
+        }
+
+        .episode-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .meta-tag {
+            background: #292929;
+            color: #dddddd;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .episode-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 22px 0;
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .previous-button {
+            background: #292929;
+            color: #ffffff;
+            border: 1px solid #444444;
+        }
+
+        .previous-button:hover {
+            background: #3a3a3a;
+        }
+
+        .next-button {
+            background: #e50914;
+            color: #ffffff;
+            border: 1px solid #e50914;
+        }
+
+        .next-button:hover {
+            background: #b80710;
+        }
+
+        .disabled-button {
+            background: #151515;
+            color: #666666;
+            border: 1px solid #292929;
+            cursor: not-allowed;
+        }
+
+        .episode-sidebar {
+            background: #191919;
+            border: 1px solid #292929;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .sidebar-heading {
+            padding: 20px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .sidebar-heading h2 {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-heading p {
+            color: #aaaaaa;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 5px;
+        }
+
+        .season-filter {
+            padding: 16px;
+            border-bottom: 1px solid #292929;
+            background: #191919;
+        }
+
+        .season-filter label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .season-filter select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444444;
+            border-radius: 6px;
+            background: #101010;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .season-filter select:focus {
+            outline: 2px solid #e50914;
+            outline-offset: 2px;
+        }
+
+        .episode-list {
+            max-height: 650px;
+            overflow-y: auto;
+        }
+
+        .episode-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            color: #ffffff;
+            text-decoration: none;
+            border-bottom: 1px solid #292929;
+            transition: background 0.2s;
+        }
+
+        .episode-card:hover {
+            background: #292929;
+        }
+
+        .episode-card.active {
+            background: #292020;
+            border-left: 4px solid #e50914;
+        }
+
+        .episode-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            background: #333333;
+            color: #ffffff;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .episode-card.active .episode-number {
+            background: #e50914;
+        }
+
+        .episode-card-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .episode-card-details h3 {
+            font-size: 13px;
+            margin-bottom: 7px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .episode-card-details p {
+            color: #999999;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .episode-status {
+            display: inline-block;
+            margin-top: 8px;
+            color: #aaaaaa;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .episode-status.in-progress {
+            color: #ff646b;
+        }
+
+        .episode-status.watched {
+            color: #42d392;
+        }
+
+        .episode-progress-track {
+            width: 100%;
+            height: 4px;
+            margin-top: 7px;
+            background: #3a3a3a;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .episode-progress-fill {
+            width: 0;
+            height: 100%;
+            background: #e50914;
+            transition: width 0.2s;
+        }
+
+        .episode-card[data-status="watched"] .episode-progress-fill {
+            background: #42d392;
+        }
+
+        .now-playing {
+            display: inline-block;
+            margin-top: 7px;
+            color: #ff5b64;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .empty-episodes {
+            padding: 25px 20px;
+            color: #aaaaaa;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #777777;
+            font-size: 12px;
+            border-top: 1px solid #292929;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 950px) {
+            .watch-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .episode-sidebar {
+                margin-top: 5px;
+            }
+
+            .episode-list {
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 16px 5%;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .back-link {
+                font-size: 12px;
+                padding: 9px 10px;
+            }
+
+            .page-container {
+                width: 94%;
+                margin-top: 22px;
+            }
+
+            .page-heading h1 {
+                font-size: 23px;
+            }
+
+            .episode-information {
+                padding: 16px;
+            }
+
+            .episode-information h2 {
+                font-size: 19px;
+            }
+
+            .episode-navigation {
+                gap: 8px;
+            }
+
+            .nav-button {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .next-episode-panel {
+                padding: 18px;
+            }
+
+            .next-episode-panel h2 {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <a class="logo" th:href="@{/}">
+        AnimeFlix <span>SA</span>
+    </a>
+
+    <a class="back-link" th:href="@{/anime/{id}(id=${anime.id})}">
+        &larr; Back to Anime
+    </a>
+</header>
+
+<main class="page-container">
+
+    <section class="page-heading">
+        <h1 th:text="${anime.title}">Anime Title</h1>
+        <p>Watch your selected episode on AnimeFlix SA.</p>
+    </section>
+
+    <div class="watch-layout">
+
+        <section class="video-section">
+
+            <div class="video-container">
+
+                <video
+                    th:if="${selectedEpisode != null
+                            and selectedEpisode.videoUrl != null
+                            and !#strings.isEmpty(selectedEpisode.videoUrl)}"
+                    class="video-player"
+                    controls
+                    playsinline
+                    preload="metadata"
+                    th:src="${selectedEpisode.videoUrl}"
+                    th:attr="data-anime-id=${anime.id},
+                             data-anime-title=${anime.title},
+                             data-anime-poster=${anime.posterUrl},
+                             data-episode-id=${selectedEpisode.id},
+                             data-episode-title=${selectedEpisode.title},
+                             data-season-number=${selectedEpisode.seasonNumber},
+                             data-episode-number=${selectedEpisode.episodeNumber}">
+
+                    Your browser does not support HTML video.
+                </video>
+
+                <div class="next-episode-overlay"
+                     id="nextEpisodeOverlay"
+                     hidden
+                     role="dialog"
+                     aria-modal="true"
+                     aria-labelledby="nextEpisodeHeading">
+
+                    <div class="next-episode-panel">
+
+                        <h2 id="nextEpisodeHeading">Episode Finished!</h2>
+
+                        <p id="nextEpisodeDescription">
+                            Get ready for the next episode.
+                        </p>
+
+                        <div class="countdown-number"
+                             id="nextEpisodeCountdown"
+                             aria-live="polite">10</div>
+
+                        <p id="nextEpisodeMessage">
+                            The next episode will start automatically.
+                        </p>
+
+                        <div class="next-episode-actions">
+
+                            <button type="button"
+                                    class="overlay-button play-next-button"
+                                    id="playNextEpisodeButton">
+                                Play Next Episode
+                            </button>
+
+                            <button type="button"
+                                    class="overlay-button cancel-next-button"
+                                    id="cancelNextEpisodeButton">
+                                Cancel
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-placeholder"
+                     th:if="${selectedEpisode == null
+                            or selectedEpisode.videoUrl == null
+                            or #strings.isEmpty(selectedEpisode.videoUrl)}">
+
+                    <p>No video is available for this episode yet.</p>
+                    <p>Please choose another episode from the list.</p>
+                </div>
+
+            </div>
+
+            <section class="episode-information"
+                     th:if="${selectedEpisode != null}">
+
+                <div class="episode-meta">
+                    <span class="meta-tag"
+                          th:text="'Season ' + ${selectedEpisode.seasonNumber}">
+                        Season 1
+                    </span>
+
+                    <span class="meta-tag"
+                          th:text="'Episode ' + ${selectedEpisode.episodeNumber}">
+                        Episode 1
+                    </span>
+                </div>
+
+                <h2 th:text="${selectedEpisode.title}">Episode Title</h2>
+
+                <p th:if="${selectedEpisode.description != null
+                            and !#strings.isEmpty(selectedEpisode.description)}"
+                   th:text="${selectedEpisode.description}">
+                    Episode description
+                </p>
+
+                <p th:if="${selectedEpisode.description == null
+                            or #strings.isEmpty(selectedEpisode.description)}">
+                    No description is available for this episode.
+                </p>
+
+            </section>
+
+            <div class="episode-navigation"
+                 th:if="${selectedEpisode != null}">
+
+                <a th:if="${previousEpisode != null}"
+                   class="nav-button previous-button"
+                   th:href="@{/watch/{id}(
+                       id=${anime.id},
+                       episodeId=${previousEpisode.id},
+                       seasonNumber=${selectedSeasonNumber}
+                   )}">
+                    &larr; Previous Episode
+                </a>
+
+                <span th:unless="${previousEpisode != null}"
+                      class="nav-button disabled-button"
+                      aria-disabled="true">
+                    &larr; Previous Episode
+                </span>
+
+                <a th:if="${nextEpisode != null}"
+                   class="nav-button next-button"
+                   th:href="@{/watch/{id}(
+                       id=${anime.id},
+                       episodeId=${nextEpisode.id},
+                       seasonNumber=${selectedSeasonNumber}
+                   )}">
+                    Next Episode &rarr;
+                </a>
+
+                <span th:unless="${nextEpisode != null}"
+                      class="nav-button disabled-button"
+                      aria-disabled="true">
+                    Next Episode &rarr;
+                </span>
+
+            </div>
+
+            <div class="episode-information"
+                 th:if="${selectedEpisode == null}">
+                <h2>No Episodes Available</h2>
+                <p>
+                    There are currently no episodes available for this anime.
+                    Add episodes to the database to start watching.
+                </p>
+            </div>
+
+        </section>
+
+        <aside class="episode-sidebar">
+
+            <div class="sidebar-heading">
+                <h2>Episodes</h2>
+                <p th:text="${anime.title}">Anime Title</p>
+                <p th:text="${episodes.size()} + ' episode(s) displayed'">
+                    0 episodes displayed
+                </p>
+            </div>
+
+            <form th:action="@{/watch/{id}(id=${anime.id})}"
+                  method="get"
+                  class="season-filter">
+
+                <label for="seasonNumber">Filter Episodes by Season</label>
+
+                <select id="seasonNumber"
+                        name="seasonNumber"
+                        onchange="this.form.submit()">
+
+                    <option value=""
+                            th:selected="${selectedSeasonNumber == null}">
+                        All Seasons
+                    </option>
+
+                    <option th:each="season : ${seasonNumbers}"
+                            th:value="${season}"
+                            th:text="|Season ${season}|"
+                            th:selected="${selectedSeasonNumber != null
+                                          and selectedSeasonNumber == season}">
+                    </option>
+
+                </select>
+            </form>
+
+            <div class="episode-list"
+                 th:if="${episodes != null and !episodes.isEmpty()}">
+
+                <a th:each="episode : ${episodes}"
+                   th:href="@{/watch/{id}(
+                       id=${anime.id},
+                       episodeId=${episode.id},
+                       seasonNumber=${selectedSeasonNumber}
+                   )}"
+                   class="episode-card"
+                   th:attr="data-episode-id=${episode.id},
+                            data-anime-id=${anime.id},
+                            data-status='not-started'"
+                   th:classappend="${selectedEpisode != null
+                       and selectedEpisode.id == episode.id}
+                       ? ' active' : ''">
+
+                    <div class="episode-number"
+                         th:text="${episode.episodeNumber}">1</div>
+
+                    <div class="episode-card-details">
+
+                        <h3 th:text="${episode.title}">Episode Title</h3>
+
+                        <p th:text="|Season ${episode.seasonNumber} · Episode ${episode.episodeNumber}|">
+                            Season 1 · Episode 1
+                        </p>
+
+                        <span class="episode-status" data-episode-status>
+                            Not Started
+                        </span>
+
+                        <div class="episode-progress-track"
+                             role="progressbar"
+                             aria-label="Episode watch progress"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             aria-valuenow="0">
+                            <div class="episode-progress-fill"></div>
+                        </div>
+
+                        <span class="now-playing"
+                              th:if="${selectedEpisode != null
+                                  and selectedEpisode.id == episode.id}">
+                            Now Playing
+                        </span>
+
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="empty-episodes"
+                 th:if="${episodes == null or episodes.isEmpty()}">
+                No episodes have been added to this season yet.
+            </div>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<footer class="footer">
+    <p>&copy; 2026 AnimeFlix SA. Your anime destination.</p>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const video = document.querySelector(".video-player");
+    const episodeCards = document.querySelectorAll(".episode-card");
+
+    const overlay = document.getElementById("nextEpisodeOverlay");
+    const countdownElement = document.getElementById("nextEpisodeCountdown");
+    const descriptionElement = document.getElementById("nextEpisodeDescription");
+    const messageElement = document.getElementById("nextEpisodeMessage");
+    const playNextButton = document.getElementById("playNextEpisodeButton");
+    const cancelButton = document.getElementById("cancelNextEpisodeButton");
+
+    let countdownInterval = null;
+    let countdownSeconds = 10;
+    let countdownCancelled = false;
+    let nextEpisodeUrl = null;
+
+    const historyKey = "animeflix-watch-history";
+    const maxHistoryItems = 30;
+
+    /* Watch history */
+
+    function saveToWatchHistory(
+        animeId,
+        episodeId,
+        animeTitle,
+        animePoster,
+        episodeTitle,
+        seasonNumber,
+        episodeNumber,
+        watchUrl
+    ) {
+        let history = [];
+
+        try {
+            const storedHistory = localStorage.getItem(historyKey);
+
+            if (storedHistory) {
+                history = JSON.parse(storedHistory);
+            }
+
+            if (!Array.isArray(history)) {
+                history = [];
+            }
+        } catch (error) {
+            console.warn("Could not read watch history:", error);
+            history = [];
+        }
+
+        // Move the current episode to the top instead of duplicating it.
+        history = history.filter(function (item) {
+            return !(
+                String(item.animeId) === String(animeId) &&
+                String(item.episodeId) === String(episodeId)
+            );
+        });
+
+        history.unshift({
+            animeId: String(animeId),
+            episodeId: String(episodeId),
+            animeTitle: animeTitle,
+            animePoster: animePoster,
+            episodeTitle: episodeTitle,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            watchUrl: watchUrl,
+            lastWatched: new Date().toISOString()
+        });
+
+        history = history.slice(0, maxHistoryItems);
+
+        try {
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        } catch (error) {
+            console.error("Could not save watch history:", error);
+        }
+    }
+
+    /* Watched and in-progress episode status */
+
+    function getWatchedKey(animeId, episodeId) {
+        return "animeflix-watched:" + animeId + ":" + episodeId;
+    }
+
+    function getProgressForEpisode(animeId, episodeId) {
+        const prefix = "animeflix-progress:";
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+
+            if (!key || !key.startsWith(prefix)) {
+                continue;
+            }
+
+            try {
+                const progress = JSON.parse(localStorage.getItem(key));
+
+                if (
+                    progress &&
+                    String(progress.animeId) === String(animeId) &&
+                    String(progress.episodeId) === String(episodeId)
+                ) {
+                    return progress;
+                }
+            } catch (error) {
+                console.warn("Skipping invalid saved progress:", error);
+            }
+        }
+
+        return null;
+    }
+
+    function updateEpisodeStatus(card) {
+        const animeId = card.dataset.animeId;
+        const episodeId = card.dataset.episodeId;
+
+        const statusElement = card.querySelector("[data-episode-status]");
+        const progressTrack = card.querySelector(".episode-progress-track");
+        const progressFill = card.querySelector(".episode-progress-fill");
+
+        if (!statusElement || !progressTrack || !progressFill) {
+            return;
+        }
+
+        const isWatched =
+            localStorage.getItem(getWatchedKey(animeId, episodeId)) === "true";
+
+        const progress = getProgressForEpisode(animeId, episodeId);
+
+        let percentage = 0;
+
+        if (isWatched) {
+            percentage = 100;
+            statusElement.textContent = "Watched";
+            statusElement.className = "episode-status watched";
+            card.dataset.status = "watched";
+        } else if (
+            progress &&
+            Number.isFinite(Number(progress.currentTime)) &&
+            Number(progress.currentTime) > 0
+        ) {
+            const currentTime = Number(progress.currentTime);
+            const duration = Number(progress.duration);
+
+            if (Number.isFinite(duration) && duration > 0) {
+                percentage = Math.min(
+                    99,
+                    Math.max(1, Math.round((currentTime / duration) * 100))
+                );
+            } else {
+                percentage = 1;
+            }
+
+            statusElement.textContent =
+                "In Progress" +
+                (percentage > 1 ? " · " + percentage + "%" : "");
+
+            statusElement.className = "episode-status in-progress";
+            card.dataset.status = "in-progress";
+        } else {
+            statusElement.textContent = "Not Started";
+            statusElement.className = "episode-status";
+            card.dataset.status = "not-started";
+        }
+
+        progressFill.style.width = percentage + "%";
+        progressTrack.setAttribute("aria-valuenow", String(percentage));
+    }
+
+    function refreshEpisodeStatuses() {
+        episodeCards.forEach(updateEpisodeStatus);
+    }
+
+    refreshEpisodeStatuses();
+    window.addEventListener("storage", refreshEpisodeStatuses);
+
+    if (!video) {
+        return;
+    }
+
+    const animeId = video.dataset.animeId;
+    const animeTitle = video.dataset.animeTitle || "Anime";
+    const animePoster = video.dataset.animePoster || "";
+    const episodeId = video.dataset.episodeId;
+    const episodeTitle = video.dataset.episodeTitle || "Episode";
+    const seasonNumber = video.dataset.seasonNumber || "1";
+    const episodeNumber = video.dataset.episodeNumber || "1";
+
+    const watchedKey = getWatchedKey(animeId, episodeId);
+
+    const watchUrl =
+        "/watch/" + encodeURIComponent(animeId) +
+        "?episodeId=" + encodeURIComponent(episodeId);
+
+    function getProgressKey() {
+        return "animeflix-progress:" + video.currentSrc;
+    }
+
+    function saveProgress() {
+        if (
+            !Number.isFinite(video.currentTime) ||
+            video.currentTime < 0 ||
+            !video.currentSrc
+        ) {
+            return;
+        }
+
+        if (localStorage.getItem(watchedKey) === "true") {
+            return;
+        }
+
+        const progress = {
+            animeId: animeId,
+            animeTitle: animeTitle,
+            animePoster: animePoster,
+            episodeId: episodeId,
+            episodeTitle: episodeTitle,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            watchUrl: watchUrl,
+            currentTime: video.currentTime,
+            duration: Number.isFinite(video.duration)
+                ? video.duration
+                : 0,
+            updatedAt: Date.now()
+        };
+
+        localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+        refreshEpisodeStatuses();
+    }
+
+    video.addEventListener("timeupdate", saveProgress);
+    video.addEventListener("pause", saveProgress);
+
+    video.addEventListener("loadedmetadata", function () {
+        if (localStorage.getItem(watchedKey) === "true") {
+            return;
+        }
+
+        const saved = localStorage.getItem(getProgressKey());
+
+        if (!saved) {
+            return;
+        }
+
+        try {
+            const progress = JSON.parse(saved);
+
+            if (
+                Number.isFinite(progress.currentTime) &&
+                Number.isFinite(video.duration) &&
+                progress.currentTime > 0 &&
+                progress.currentTime < video.duration - 5
+            ) {
+                video.currentTime = progress.currentTime;
+            }
+        } catch (error) {
+            console.error("Could not restore playback progress:", error);
+        }
+    });
+
+    /* Automatic next episode */
+
+    function stopCountdown() {
+        if (countdownInterval !== null) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+    }
+
+    function hideNextEpisodeOverlay() {
+        stopCountdown();
+
+        if (overlay) {
+            overlay.hidden = true;
+        }
+    }
+
+    function navigateToNextEpisode() {
+        stopCountdown();
+
+        if (!nextEpisodeUrl || countdownCancelled) {
+            hideNextEpisodeOverlay();
+            return;
+        }
+
+        window.location.href = nextEpisodeUrl;
+    }
+
+    function startNextEpisodeCountdown() {
+        if (!overlay || !countdownElement || !nextEpisodeUrl) {
+            return;
+        }
+
+        const nextEpisodeLink = document.querySelector(
+            ".episode-navigation .next-button"
+        );
+
+        if (!nextEpisodeLink) {
+            return;
+        }
+
+        nextEpisodeUrl = nextEpisodeLink.href;
+        countdownCancelled = false;
+        countdownSeconds = 10;
+
+        const nextEpisodeCard = Array.from(episodeCards).find(function (card) {
+            return card.href === nextEpisodeUrl;
+        });
+
+        let nextTitle = "the next episode";
+
+        if (nextEpisodeCard) {
+            const title = nextEpisodeCard.querySelector("h3");
+
+            if (title && title.textContent.trim()) {
+                nextTitle = title.textContent.trim();
+            }
+        }
+
+        descriptionElement.textContent = "Up next: " + nextTitle;
+
+        messageElement.textContent =
+            "Starting automatically in " + countdownSeconds + " seconds.";
+
+        countdownElement.textContent = countdownSeconds;
+        overlay.hidden = false;
+
+        stopCountdown();
+
+        countdownInterval = setInterval(function () {
+            countdownSeconds--;
+            countdownElement.textContent = countdownSeconds;
+
+            messageElement.textContent =
+                "Starting automatically in " +
+                countdownSeconds +
+                " seconds.";
+
+            if (countdownSeconds <= 0) {
+                stopCountdown();
+
+                if (!countdownCancelled) {
+                    navigateToNextEpisode();
+                }
+            }
+        }, 1000);
+    }
+
+    if (playNextButton) {
+        playNextButton.addEventListener("click", function () {
+            if (!nextEpisodeUrl) {
+                const nextLink = document.querySelector(
+                    ".episode-navigation .next-button"
+                );
+
+                if (nextLink) {
+                    nextEpisodeUrl = nextLink.href;
+                }
+            }
+
+            if (nextEpisodeUrl) {
+                countdownCancelled = false;
+                navigateToNextEpisode();
+            }
+        });
+    }
+
+    if (cancelButton) {
+        cancelButton.addEventListener("click", function () {
+            countdownCancelled = true;
+            stopCountdown();
+            hideNextEpisodeOverlay();
+
+            messageElement.textContent = "Automatic playback cancelled.";
+        });
+    }
+
+    /* Save history when playback starts */
+
+    video.addEventListener("play", function () {
+        saveToWatchHistory(
+            animeId,
+            episodeId,
+            animeTitle,
+            animePoster,
+            episodeTitle,
+            seasonNumber,
+            episodeNumber,
+            watchUrl
+        );
+
+        if (overlay && !overlay.hidden) {
+            hideNextEpisodeOverlay();
+        }
+    });
+
+    video.addEventListener("ended", function () {
+        localStorage.setItem(watchedKey, "true");
+
+        if (video.currentSrc) {
+            localStorage.removeItem(getProgressKey());
+        }
+
+        refreshEpisodeStatuses();
+
+        const nextLink = document.querySelector(
+            ".episode-navigation .next-button"
+        );
+
+        if (nextLink) {
+            nextEpisodeUrl = nextLink.href;
+            startNextEpisodeCountdown();
+        }
+    });
+
+});
+</script>
+
+</body>
+</html>

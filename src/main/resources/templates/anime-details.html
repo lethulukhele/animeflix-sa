@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${anime.title} + ' | AnimeFlix SA'">
+        Anime Details | AnimeFlix SA
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0b0f;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: #101015;
+            border-bottom: 1px solid #303039;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .logo span {
+            color: #e50914;
+        }
+
+        .back-link {
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #ff2530;
+        }
+
+        .details-container {
+            max-width: 1150px;
+            margin: 50px auto;
+            padding: 0 25px;
+        }
+
+        .details-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .poster {
+            min-height: 430px;
+            background: linear-gradient(145deg, #40151c, #17171d);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .poster img {
+            width: 100%;
+            height: 430px;
+            object-fit: cover;
+        }
+
+        .poster-placeholder {
+            padding: 25px;
+        }
+
+        .poster-placeholder .symbol {
+            font-size: 70px;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .poster-placeholder h2 {
+            font-size: 25px;
+            overflow-wrap: anywhere;
+        }
+
+        .eyebrow {
+            color: #ff5b64;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .anime-title {
+            font-size: clamp(34px, 5vw, 55px);
+            line-height: 1.15;
+            margin-bottom: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .metadata {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .metadata span {
+            padding: 7px 12px;
+            background: #202027;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .metadata .rating {
+            color: #ffc857;
+        }
+
+        .description-title {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #c5c5ce;
+            line-height: 1.9;
+            margin-bottom: 28px;
+            white-space: pre-line;
+        }
+
+        .primary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 23px;
+            border: none;
+            border-radius: 5px;
+            background: #e50914;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .primary-button:hover {
+            background: #ff2530;
+            transform: translateY(-2px);
+        }
+
+        .primary-button:focus-visible,
+        .back-link:focus-visible,
+        .logo:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 4px;
+        }
+
+        .notice {
+            margin-top: 30px;
+            padding: 20px;
+            background: #17171d;
+            border-left: 4px solid #e50914;
+            border-radius: 5px;
+            color: #c5c5ce;
+            font-size: 14px;
+        }
+
+        .notice strong {
+            display: block;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .footer {
+            padding: 25px 6%;
+            border-top: 1px solid #303039;
+            color: #aaa;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            .details-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .poster {
+                max-width: 320px;
+                width: 100%;
+                min-height: 350px;
+            }
+
+            .poster img {
+                height: 350px;
+            }
+
+            .details-container {
+                margin: 30px auto;
+            }
+
+            .navbar {
+                padding: 18px 5%;
+                gap: 15px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .back-link {
+                text-align: right;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo">ANIMEFLIX<span> SA</span></a>
+    <a href="/" class="back-link">&larr; Back to Catalogue</a>
+</header>
+
+<main class="details-container">
+
+    <div class="details-layout">
+
+        <div class="poster">
+
+            <img
+                th:if="${anime.posterUrl != null and !#strings.isEmpty(anime.posterUrl)}"
+                th:src="${anime.posterUrl}"
+                th:alt="${anime.title}">
+
+            <div
+                class="poster-placeholder"
+                th:if="${anime.posterUrl == null or #strings.isEmpty(anime.posterUrl)}">
+
+                <span class="symbol">&#127916;</span>
+
+                <h2 th:text="${anime.title}">Anime Title</h2>
+
+            </div>
+
+        </div>
+
+        <section class="details-content">
+
+            <p class="eyebrow">AnimeFlix SA Catalogue</p>
+
+            <h1 class="anime-title" th:text="${anime.title}">
+                Anime Title
+            </h1>
+
+            <div class="metadata">
+
+                <span th:text="${anime.releaseYear != null ? anime.releaseYear : 'Year not specified'}">
+                    Year
+                </span>
+
+                <span th:text="${anime.genre != null and !#strings.isEmpty(anime.genre) ? anime.genre : 'Genre not specified'}">
+                    Genre
+                </span>
+
+                <span class="rating">
+                    &#9733;
+                    <span th:text="${anime.rating != null ? anime.rating : 'Not rated'}">
+                        Rating
+                    </span>
+                </span>
+
+            </div>
+
+            <h2 class="description-title">Synopsis</h2>
+
+            <p class="description"
+               th:text="${anime.description != null and !#strings.isEmpty(anime.description) ? anime.description : 'No synopsis is available for this anime yet.'}">
+                Anime description.
+            </p>
+
+            <!-- Navigate to the watch page for this anime -->
+            <a
+                class="primary-button"
+                th:href="@{/watch/{id}(id=${anime.id})}">
+                <span aria-hidden="true">&#9654;</span>
+                Watch Anime
+            </a>
+
+            <div class="notice">
+                <strong>Ready to watch?</strong>
+                <p>
+                    Open the watch page to access this anime's available
+                    episodes. Playback depends on the episode having a
+                    configured video source.
+                </p>
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+<footer class="footer">
+    &copy; <span id="year"></span> AnimeFlix SA.
+    Your anime discovery destination.
+</footer>
+
+<script>
+    document.getElementById("year").textContent =
+        new Date().getFullYear();
+</script>
+
+</body>
+</html>

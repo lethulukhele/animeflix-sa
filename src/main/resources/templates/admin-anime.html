@@ -1,0 +1,659 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Management | AnimeFlix SA</title>
+
+    <style>
+        :root {
+            --background: #0b0b0f;
+            --surface: #17171d;
+            --border: #303039;
+            --primary: #e50914;
+            --text: #ffffff;
+            --muted: #b4b4be;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 5%;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        a {
+            color: #ff6971;
+            text-decoration: none;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 900;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .muted {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #101015;
+            border: 1px solid #41414b;
+            border-radius: 5px;
+            color: white;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 11px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .secondary {
+            background: #34343d;
+            color: white;
+        }
+
+        .danger {
+            background: #8f1720;
+            color: white;
+        }
+
+        button:hover {
+            filter: brightness(1.15);
+        }
+
+        .status {
+            margin-top: 15px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .catalogue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        #searchInput {
+            max-width: 350px;
+        }
+
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .anime-card {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #101015;
+        }
+
+        .poster {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            background: #22222a;
+            display: block;
+        }
+
+        .card-content {
+            padding: 16px;
+        }
+
+        .card-content h3 {
+            margin-top: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .description {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .card-actions button {
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .anime-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 4%;
+            }
+
+            .form-grid, .anime-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a class="logo" href="/">AnimeFlix <span>SA</span></a>
+    <a href="/">← Back to homepage</a>
+</header>
+
+<main>
+    <h1>Anime Management</h1>
+    <p class="muted">
+        Add anime to your catalogue and manage existing titles.
+        Changes are saved through your Spring Boot API.
+    </p>
+
+    <section class="panel">
+        <h2 id="formTitle">Add New Anime</h2>
+
+        <form id="animeForm">
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="title">Anime title *</label>
+                    <input id="title" maxlength="150" required>
+                </div>
+
+                <div class="field">
+                    <label for="genre">Genre</label>
+                    <input id="genre" maxlength="100"
+                           placeholder="Action, Adventure">
+                </div>
+
+                <div class="field">
+                    <label for="releaseYear">Release year</label>
+                    <input id="releaseYear" maxlength="50"
+                           placeholder="2026">
+                </div>
+
+                <div class="field">
+                    <label for="rating">Age rating</label>
+                    <input id="rating" maxlength="30"
+                           placeholder="PG-13">
+                </div>
+
+                <div class="field full-width">
+                    <label for="description">Description</label>
+                    <textarea id="description" maxlength="500"
+                              placeholder="Describe the anime..."></textarea>
+                </div>
+
+                <div class="field full-width">
+                    <label for="posterUrl">Poster image URL</label>
+                    <input id="posterUrl" type="url" maxlength="500"
+                           placeholder="https://example.com/poster.jpg">
+                </div>
+
+                <div class="field full-width">
+                    <label for="videoUrl">Video URL (optional)</label>
+                    <input id="videoUrl" type="url" maxlength="500"
+                           placeholder="https://example.com/video.mp4">
+                    <small class="muted">
+                        You can manage individual episodes separately.
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="actions">
+                <button class="primary" type="submit" id="saveButton">
+                    Add Anime
+                </button>
+
+                <button class="secondary" type="button"
+                        id="cancelButton" hidden>
+                    Cancel Edit
+                </button>
+            </div>
+
+            <p id="formStatus" class="status" role="status"
+               aria-live="polite"></p>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="catalogue-header">
+            <div>
+                <h2>Anime Catalogue</h2>
+                <p id="animeCount" class="muted">Loading anime...</p>
+            </div>
+
+            <input id="searchInput"
+                   type="search"
+                   placeholder="Search anime by title...">
+        </div>
+
+        <p id="listStatus" class="status" role="status"
+           aria-live="polite"></p>
+
+        <div id="animeGrid" class="anime-grid"></div>
+    </section>
+</main>
+
+<script>
+    const API_URL = "/api/anime";
+
+    const animeForm = document.getElementById("animeForm");
+    const animeGrid = document.getElementById("animeGrid");
+    const formStatus = document.getElementById("formStatus");
+    const listStatus = document.getElementById("listStatus");
+    const animeCount = document.getElementById("animeCount");
+    const searchInput = document.getElementById("searchInput");
+    const formTitle = document.getElementById("formTitle");
+    const saveButton = document.getElementById("saveButton");
+    const cancelButton = document.getElementById("cancelButton");
+
+    let animeList = [];
+    let editingId = null;
+
+    function setFormStatus(message) {
+        formStatus.textContent = message;
+    }
+
+    function setListStatus(message) {
+        listStatus.textContent = message;
+    }
+
+    async function readResponse(response) {
+        if (response.status === 204) {
+            return null;
+        }
+
+        const text = await response.text();
+
+        if (!text) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(text);
+        } catch {
+            return text;
+        }
+    }
+
+    function getErrorMessage(data, fallback) {
+        if (data && typeof data === "object") {
+            return data.detail || data.message ||
+                   data.error || fallback;
+        }
+
+        return typeof data === "string" && data
+            ? data
+            : fallback;
+    }
+
+    async function loadAnime() {
+        setListStatus("Loading catalogue...");
+
+        try {
+            const response = await fetch(API_URL);
+            const data = await readResponse(response);
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(
+                    data, "Could not load anime."
+                ));
+            }
+
+            animeList = Array.isArray(data) ? data : [];
+            renderAnime();
+
+            setListStatus(
+                animeList.length === 0
+                    ? "No anime found. Add your first title above."
+                    : ""
+            );
+        } catch (error) {
+            setListStatus("Error: " + error.message);
+            animeCount.textContent = "Catalogue unavailable";
+        }
+    }
+
+    function createElement(tag, className, text) {
+        const element = document.createElement(tag);
+
+        if (className) {
+            element.className = className;
+        }
+
+        if (text !== undefined) {
+            element.textContent = text;
+        }
+
+        return element;
+    }
+
+    function renderAnime() {
+        animeGrid.replaceChildren();
+
+        const query = searchInput.value.trim().toLowerCase();
+
+        const filtered = animeList.filter(function(anime) {
+            return (anime.title || "").toLowerCase().includes(query);
+        });
+
+        animeCount.textContent =
+            filtered.length + " of " + animeList.length + " anime";
+
+        filtered.forEach(function(anime) {
+            const card = createElement("article", "anime-card");
+
+            if (anime.posterUrl) {
+                const poster = document.createElement("img");
+                poster.className = "poster";
+                poster.src = anime.posterUrl;
+                poster.alt = (anime.title || "Anime") + " poster";
+                poster.loading = "lazy";
+
+                poster.onerror = function() {
+                    poster.removeAttribute("src");
+                    poster.alt = "Poster unavailable";
+                };
+
+                card.appendChild(poster);
+            } else {
+                const placeholder = createElement(
+                    "div", "poster", "No poster available"
+                );
+
+                placeholder.style.display = "flex";
+                placeholder.style.alignItems = "center";
+                placeholder.style.justifyContent = "center";
+                placeholder.style.color = "#b4b4be";
+
+                card.appendChild(placeholder);
+            }
+
+            const content = createElement("div", "card-content");
+
+            content.appendChild(
+                createElement("h3", "", anime.title || "Untitled")
+            );
+
+            content.appendChild(
+                createElement(
+                    "p", "muted",
+                    (anime.genre || "Genre not set") +
+                    " · " + (anime.releaseYear || "Year unknown")
+                )
+            );
+
+            content.appendChild(
+                createElement(
+                    "p", "muted",
+                    "Rating: " + (anime.rating || "Not specified")
+                )
+            );
+
+            content.appendChild(
+                createElement(
+                    "p", "description",
+                    anime.description || "No description available."
+                )
+            );
+
+            const actions = createElement("div", "card-actions");
+
+            const editButton = createElement("button", "secondary", "Edit");
+            editButton.type = "button";
+            editButton.addEventListener("click", function() {
+                editAnime(anime);
+            });
+
+            const deleteButton = createElement("button", "danger", "Delete");
+            deleteButton.type = "button";
+            deleteButton.addEventListener("click", function() {
+                deleteAnime(anime);
+            });
+
+            actions.append(editButton, deleteButton);
+            content.appendChild(actions);
+            card.appendChild(content);
+            animeGrid.appendChild(card);
+        });
+    }
+
+    animeForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        setFormStatus("Saving anime...");
+
+        const anime = {
+            title: document.getElementById("title").value.trim(),
+            genre: document.getElementById("genre").value.trim(),
+            releaseYear: document.getElementById("releaseYear").value.trim(),
+            rating: document.getElementById("rating").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            posterUrl: document.getElementById("posterUrl").value.trim(),
+            videoUrl: document.getElementById("videoUrl").value.trim()
+        };
+
+        if (!anime.title) {
+            setFormStatus("Please enter an anime title.");
+            return;
+        }
+
+        const isEditing = editingId !== null;
+        const url = isEditing
+            ? API_URL + "/" + editingId
+            : API_URL;
+
+        try {
+            const response = await fetch(url, {
+                method: isEditing ? "PUT" : "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(anime)
+            });
+
+            const data = await readResponse(response);
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(
+                    data, "Could not save anime."
+                ));
+            }
+
+            setFormStatus(
+                isEditing
+                    ? "Anime updated successfully."
+                    : "Anime added successfully."
+            );
+
+            resetForm();
+            await loadAnime();
+        } catch (error) {
+            setFormStatus("Save failed: " + error.message);
+        }
+    });
+
+    function editAnime(anime) {
+        editingId = anime.id;
+
+        document.getElementById("title").value = anime.title || "";
+        document.getElementById("genre").value = anime.genre || "";
+        document.getElementById("releaseYear").value =
+            anime.releaseYear || "";
+        document.getElementById("rating").value = anime.rating || "";
+        document.getElementById("description").value =
+            anime.description || "";
+        document.getElementById("posterUrl").value = anime.posterUrl || "";
+        document.getElementById("videoUrl").value = anime.videoUrl || "";
+
+        formTitle.textContent = "Edit Anime";
+        saveButton.textContent = "Save Changes";
+        cancelButton.hidden = false;
+        setFormStatus("Editing: " + anime.title);
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function deleteAnime(anime) {
+        const confirmed = window.confirm(
+            'Delete "' + anime.title + '"? ' +
+            "This action cannot be undone."
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        setListStatus("Deleting anime...");
+
+        try {
+            const response = await fetch(API_URL + "/" + anime.id, {
+                method: "DELETE"
+            });
+
+            const data = await readResponse(response);
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(
+                    data,
+                    "Could not delete anime. It may have episodes " +
+                    "linked to it."
+                ));
+            }
+
+            if (editingId === anime.id) {
+                resetForm();
+            }
+
+            setListStatus("Anime deleted successfully.");
+            await loadAnime();
+        } catch (error) {
+            setListStatus(
+                "Delete failed: " + error.message +
+                " If this anime has episodes, its database relationship " +
+                "must be handled before deletion."
+            );
+        }
+    }
+
+    function resetForm() {
+        animeForm.reset();
+        editingId = null;
+        formTitle.textContent = "Add New Anime";
+        saveButton.textContent = "Add Anime";
+        cancelButton.hidden = true;
+    }
+
+    cancelButton.addEventListener("click", function() {
+        resetForm();
+        setFormStatus("Edit cancelled.");
+    });
+
+    searchInput.addEventListener("input", renderAnime);
+
+    loadAnime();
+</script>
+
+</body>
+</html>
